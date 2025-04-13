@@ -143,7 +143,8 @@ async def upload_media(sender, target_chat_id, file, caption, edit, topic_id):
                 gf, file,
                 reply=progress_message,
                 name=None,
-                progress_bar_function=lambda done, total: progress_callback(done, total, sender)
+                progress_bar_function=lambda done, total: progress_callback(done, total, sender),
+                user_id=sender
             )
             await progress_message.delete()
 
@@ -162,6 +163,7 @@ async def upload_media(sender, target_chat_id, file, caption, edit, topic_id):
                 caption=caption,
                 attributes=attributes,
                 reply_to=topic_id,
+                parse_mode='html',
                 thumb=thumb_path
             )
             await gf.send_file(
@@ -169,6 +171,7 @@ async def upload_media(sender, target_chat_id, file, caption, edit, topic_id):
                 uploaded,
                 caption=caption,
                 attributes=attributes,
+                parse_mode='html',
                 thumb=thumb_path
             )
 
@@ -178,7 +181,8 @@ async def upload_media(sender, target_chat_id, file, caption, edit, topic_id):
 
     finally:
         if thumb_path and os.path.exists(thumb_path):
-            os.remove(thumb_path)
+            if os.path.basename(thumb_path) != f"{sender}.jpg":  # Check if the filename is not {sender}.jpg
+                os.remove(thumb_path)
         gc.collect()
 
 
@@ -668,7 +672,7 @@ async def callback_query_handler(event):
         await event.respond('Please send the photo you want to set as the thumbnail.')
     
     elif event.data == b'pdfwt':
-        await event.respond("Watermark is Pro+ Plan.. contact @kingofpatal")
+        await event.respond("This feature is not available yet in public repo...")
         return
 
     elif event.data == b'uploadmethod':
